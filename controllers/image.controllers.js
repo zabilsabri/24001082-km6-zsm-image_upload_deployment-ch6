@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const axios = require('axios');
 const response = require('../utils/response');
-const imageKit = require('../utils/imageKit');
+const imageKit = require('../utils/imagekit');
 const path = require('path');
 const prisma = new PrismaClient();
 
