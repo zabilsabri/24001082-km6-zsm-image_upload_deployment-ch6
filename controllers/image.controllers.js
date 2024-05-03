@@ -62,7 +62,7 @@ module.exports = {
             })
 
             if(!exist){
-                res.status(404).json(response('error', error.message));
+                res.status(404).json(response('error', 'Image not found'));
             }
 
             const image = await prisma.image.findUnique({
@@ -98,7 +98,7 @@ module.exports = {
             });
 
             if(!image){
-                res.status(404).json(response('error', error.message));
+                res.status(404).json(response('error', 'Image not found'));
             }
 
             const filename = image.image_url.substring(image.image_url.lastIndexOf('/') + 1);
@@ -127,8 +127,8 @@ module.exports = {
             
             try {
                 
-                const id = parseInt(req.params.id);
                 const { judul, deskripsi } = req.body;
+                const id = parseInt(req.params.id);
     
                 const image = await prisma.image.findUnique({
                     where: {
@@ -137,7 +137,7 @@ module.exports = {
                 });
     
                 if(!image){
-                    res.status(404).json(response('error', error.message));
+                    res.status(404).json(response('error', 'Image not found'));
                 }
     
                 const updatedImage = await prisma.image.update({
