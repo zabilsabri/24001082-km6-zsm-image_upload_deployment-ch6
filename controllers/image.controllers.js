@@ -28,11 +28,7 @@ module.exports = {
 
             res.status(201).json({
                 status: 'success',
-                data: {
-                    judul: image.judul,
-                    deskripsi: image.deskripsi,
-                    image_url: image.url
-                }
+                message: 'Image has been uploaded'
             });
 
         } catch (error) {
@@ -116,7 +112,10 @@ module.exports = {
                 }
             });
 
-            res.status(200).json(response('success', 'Image has been deleted'));
+            res.status(200).json({
+                status: 'success',
+                message: 'Image has been deleted in database and imagekit.io'
+            });
 
         } catch (error) {
             res.status(500).json(response('error', error.message));
@@ -151,7 +150,10 @@ module.exports = {
                     }
                 });
     
-                res.status(200).json(response('success', updatedImage));
+                res.status(200).json({
+                    status: 'success',
+                    message: 'Image has been updated'
+                });
     
             } catch (error) {
                 res.status(500).json(response('error', error.message));
