@@ -1,8 +1,9 @@
 const { PrismaClient } = require('@prisma/client');
-const axios = require('axios');
 const response = require('../utils/response');
 const imageKit = require('../utils/imagekit');
 const path = require('path');
+const imagekit = require('../utils/imagekit');
+const getFileId = require('../utils/fileId');
 const prisma = new PrismaClient();
 
 module.exports = {
@@ -74,7 +75,14 @@ module.exports = {
                 }
             });
 
-            res.status(200).json(response('success', image));
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    judul: image.judul,
+                    deskripsi: image.deskripsi,
+                    image_url: image.image_url
+                }
+            });
 
         } catch (error) {
             res.status(500).json(response('error', error.message));
@@ -82,24 +90,73 @@ module.exports = {
     },
 
     deleteImage: async(req, res, next) => {
-        
-        const id = parseInt(req.params.id);
 
-        const image = await prisma.image.findUnique({
-            where: {
-                id: id
+        try {
+            
+            const id = parseInt(req.params.id);
+
+            const image = await prisma.image.findUnique({
+                where: {
+                    id: id
+                }
+            });
+
+            if(!image){
+                res.status(404).json(response('error', error.message));
             }
-        });
 
-        if(!image){
-            res.status(404).json(response('error', error.message));
+            const filename = image.image_url.substring(image.image_url.lastIndexOf('/') + 1);
+            const fileId = await getFileId(filename);
+
+            await imagekit.deleteFile(fileId);
+
+            await prisma.image.delete({
+                where: {
+                    id: id
+                }
+            });
+
+            res.status(200).json(response('success', 'Image has been deleted'));
+
+        } catch (error) {
+            res.status(500).json(response('error', error.message));
         }
+        
+    },
 
-        const response = await axios.get(image.image_url);
-        const fileId = response.headers['x-request-id'];
-
-        console.log(fileId);
-
-    }
+    editImage: async(req, res, next) => {
+            
+            try {
+                
+                const id = parseInt(req.params.id);
+                const { judul, deskripsi } = req.body;
+    
+                const image = await prisma.image.findUnique({
+                    where: {
+                        id: id
+                    }
+                });
+    
+                if(!image){
+                    res.status(404).json(response('error', error.message));
+                }
+    
+                const updatedImage = await prisma.image.update({
+                    where: {
+                        id: id
+                    },
+                    data: {
+                        judul: judul,
+                        deskripsi: deskripsi
+                    }
+                });
+    
+                res.status(200).json(response('success', updatedImage));
+    
+            } catch (error) {
+                res.status(500).json(response('error', error.message));
+            }
+    
+        }
 
 }
