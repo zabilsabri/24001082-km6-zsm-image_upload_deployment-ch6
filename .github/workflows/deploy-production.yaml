@@ -30,7 +30,7 @@ jobs:
 
       - name: Run Migration
         run: |
-          export DATABASE_URL="${{ secrets.DATABASE_URL }}"
+          export DATABASE_URL="${{ secrets.DATABASE_PROD_URL }}"
           npx prisma migrate deploy
         
       - name: Deploy to Railway
